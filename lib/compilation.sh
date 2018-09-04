@@ -88,6 +88,8 @@ compile_atf()
 
 compile_uboot()
 {
+if [[ $ADD_UBOOT == yes ]]; then
+
 	# not optimal, but extra cleaning before overlayfs_wrapper should keep sources directory clean
 	if [[ $CLEAN_LEVEL == *make* ]]; then
 		display_alert "Cleaning" "$BOOTSOURCEDIR" "info"
@@ -248,6 +250,7 @@ compile_uboot()
 	[[ ! -f $SRC/.tmp/${uboot_name}.deb ]] && exit_with_error "Building u-boot package failed"
 
 	mv $SRC/.tmp/${uboot_name}.deb $DEST/debs/
+fi
 }
 
 compile_kernel()
