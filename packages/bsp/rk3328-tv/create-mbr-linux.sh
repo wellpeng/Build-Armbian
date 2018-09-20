@@ -2,7 +2,13 @@
 
 echo "Start script create MBR and filesystem"
 
-DEV_EMMC=/dev/mmcblk0
+if grep /dev/mmcblk0 /proc/mounts | grep "boot" ; then
+    DEV_EMMC=/dev/mmcblk1
+else
+    DEV_EMMC=/dev/mmcblk0
+fi
+
+echo $DEV_EMMC
 
 echo "Start backup u-boot default"
 

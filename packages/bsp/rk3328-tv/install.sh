@@ -5,27 +5,15 @@ echo "Start copy system for eMMC."
 mkdir -p /ddbr
 chmod 777 /ddbr
 
-VER=`uname -r`
+if grep /dev/mmcblk0 /proc/mounts | grep "boot" ; then
+    PART_BOOT="/dev/mmcblk1p1"
+    PART_ROOT="/dev/mmcblk1p2"
+else
+    PART_BOOT="/dev/mmcblk0p1"
+    PART_ROOT="/dev/mmcblk0p2"
+fi
 
-IMAGE_KERNEL="/boot/Image"
-IMAGE_INITRD="/boot/uInitrd"
-PART_BOOT="/dev/mmcblk0p1"
-PART_ROOT="/dev/mmcblk0p2"
 DIR_INSTALL="/ddbr/install"
-IMAGE_DTB="/boot/dtb.img"
-SCRIPT_EMMC="/boot/boot.scr"
-IMAGE_DTB_ALL="/boot/dtb"
-SCRIPT_ENV="/root/armbianEnv.txt"
-
-if [ ! -f $IMAGE_KERNEL ] ; then
-    echo "Not KERNEL.  STOP install !!!"
-    return
-fi
-
-if [ ! -f $IMAGE_INITRD ] ; then
-    echo "Not INITRD.  STOP install !!!"
-    return
-fi
 
 if [ -d $DIR_INSTALL ] ; then
     rm -rf $DIR_INSTALL
@@ -42,28 +30,13 @@ echo "done."
 
 mount -o rw $PART_BOOT $DIR_INSTALL
 
-echo -n "Cppying kernel image..."
-cp $IMAGE_KERNEL $DIR_INSTALL && sync
+echo -n "Cppying BOOT..."
+cp -r /boot/* $DIR_INSTALL && sync
 echo "done."
 
-echo -n "Cppying initrd..."
-cp $IMAGE_INITRD $DIR_INSTALL && sync
-echo "done."
-
-echo -n "Writing script eMMC..."
-cp $SCRIPT_EMMC $DIR_INSTALL && sync
-echo "done."
-
-echo -n "Writing dir all dtb ..."
-cp -r $IMAGE_DTB_ALL $DIR_INSTALL && sync
-echo "done."
-
-echo -n "Writing init ENV..."
-cp $SCRIPT_ENV $DIR_INSTALL && sync
-echo "done."
-
-echo -n "Writing device tree image..."
-cp $IMAGE_DTB $DIR_INSTALL && sync
+echo -n "Edit init config..."
+sed -e "s/ROOTFS/ROOT_EMMC/g" \
+ -i "$DIR_INSTALL/extlinux/extlinux.conf"
 echo "done."
 
 umount $DIR_INSTALL
@@ -133,17 +106,10 @@ cp -a /root/fstab $DIR_INSTALL/etc/fstab
 
 rm $DIR_INSTALL/root/install.sh
 rm $DIR_INSTALL/root/fstab
-rm $DIR_INSTALL/root/armbianEnv.txt
 rm $DIR_INSTALL/usr/bin/ddbr
 
-cd /
 sync
-
 umount $DIR_INSTALL
-
-echo "*******************************************"
-echo "Done copy ROOTFS"
-echo "*******************************************"
 
 echo "*******************************************"
 echo "Complete copy OS to eMMC "
