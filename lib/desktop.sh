@@ -63,7 +63,6 @@ create_desktop_package ()
 		# Disable Pulseaudio timer scheduling which does not work with sndhdmi driver
 		if [ -f /etc/pulse/default.pa ]; then sed "s/load-module module-udev-detect$/& tsched=0/g" -i  /etc/pulse/default.pa; fi
 
-		[ -f /etc/default/nodm ] && sed "s/NODM_ENABLED=\(.*\)/NODM_ENABLED=false/g" -i /etc/default/nodm
 	exit 0
 	EOF
 	chmod 755 $destination/DEBIAN/postinst
@@ -116,8 +115,8 @@ create_desktop_package ()
 desktop_postinstall ()
 {
 	# stage: install display manager
-	display_alert "Installing" "display manager: $DISPLAY_MANAGER" "info"
-	chroot $SDCARD /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=\"--force-confold\" -y -qq install $PACKAGE_LIST_DISPLAY_MANAGER" >> $DEST/debug/install.log 2>&1
+#	display_alert "Installing" "display manager: $DISPLAY_MANAGER" "info"
+#	chroot $SDCARD /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=\"--force-confold\" -y -qq install $PACKAGE_LIST_DISPLAY_MANAGER" >> $DEST/debug/install.log 2>&1
 	[[ -f $SDCARD/etc/default/nodm ]] && sed "s/NODM_ENABLED=\(.*\)/NODM_ENABLED=false/g" -i $SDCARD/etc/default/nodm
 	[[ -d $SDCARD/etc/lightdm ]] && chroot $SDCARD /bin/bash -c "systemctl --no-reload disable lightdm.service >/dev/null 2>&1"
 

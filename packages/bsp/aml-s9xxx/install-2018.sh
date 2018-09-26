@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ ! -f /boot/uboot.img ] ; then
+    echo "Not found new u-boot /boot/uboot.img !!! Stop install !!!"
+    exit 1
+fi
+
 echo "Start script create MBR and filesystem"
 
 DEV_EMMC=/dev/mmcblk1
@@ -11,14 +16,13 @@ dd if="${DEV_EMMC}" of=/boot/u-boot-default.img bs=1M count=4
 echo "Start create MBR and partittion"
 
 parted -s "${DEV_EMMC}" mklabel msdos
-parted -s "${DEV_EMMC}" mkpart primary fat32 700M 828M
-parted -s "${DEV_EMMC}" mkpart primary ext4 829M 100%
+parted -s "${DEV_EMMC}" mkpart primary fat32 4M 132M
+parted -s "${DEV_EMMC}" mkpart primary ext4 133M 100%
 
 echo "Start restore u-boot"
 
-dd if=/boot/u-boot-default.img of="${DEV_EMMC}" conv=fsync bs=1 count=442
-dd if=/boot/u-boot-default.img of="${DEV_EMMC}" conv=fsync bs=512 skip=1 seek=1
-
+dd if=/boot/uboot.img of="${DEV_EMMC}" conv=fsync bs=1 count=442
+dd if=/boot/uboot.img of="${DEV_EMMC}" conv=fsync bs=512 skip=1 seek=1
 sync
 
 echo "Done"
@@ -27,28 +31,9 @@ echo "Start copy system for eMMC."
 
 mkdir -p /ddbr
 chmod 777 /ddbr
-
-VER=`uname -r`
-
-IMAGE_KERNEL="/boot/zImage"
-IMAGE_INITRD="/boot/uInitrd"
 PART_BOOT="/dev/mmcblk1p1"
 PART_ROOT="/dev/mmcblk1p2"
 DIR_INSTALL="/ddbr/install"
-IMAGE_DTB="/boot/dtb.img"
-SCRIPT_EMMC="/boot/boot.scr"
-SCRIPT_EMMC_AML="/boot/emmc_autoscript"
-SCRIPT_ENV="/boot/emmc_uEnv.ini"
-
-if [ ! -f $IMAGE_KERNEL ] ; then
-    echo "Not KERNEL.  STOP install !!!"
-    return
-fi
-
-if [ ! -f $IMAGE_INITRD ] ; then
-    echo "Not INITRD.  STOP install !!!"
-    return
-fi
 
 if [ -d $DIR_INSTALL ] ; then
     rm -rf $DIR_INSTALL
@@ -65,28 +50,13 @@ echo "done."
 
 mount -o rw $PART_BOOT $DIR_INSTALL
 
-echo -n "Cppying kernel image..."
-cp $IMAGE_KERNEL $DIR_INSTALL && sync
+echo -n "Cppying BOOT..."
+cp -r /boot/* $DIR_INSTALL && sync
 echo "done."
 
-echo -n "Cppying initrd..."
-cp $IMAGE_INITRD $DIR_INSTALL && sync
-echo "done."
-
-echo -n "Writing script eMMC..."
-cp $SCRIPT_EMMC $DIR_INSTALL && sync
-echo "done."
-
-echo -n "Writing script eMMC_AML..."
-cp $SCRIPT_EMMC_AML $DIR_INSTALL && sync
-echo "done."
-
-echo -n "Writing init ENV..."
-cp $SCRIPT_ENV $DIR_INSTALL && sync
-echo "done."
-
-echo -n "Writing device tree image..."
-cp $IMAGE_DTB $DIR_INSTALL && sync
+echo -n "Edit init config..."
+sed -e "s/ROOTFS/ROOT_EMMC/g" \
+ -i "$DIR_INSTALL/extlinux/extlinux.conf"
 echo "done."
 
 umount $DIR_INSTALL
@@ -152,28 +122,14 @@ tar -cf - var | (cd $DIR_INSTALL; tar -xpf -)
 echo "Copy fstab"
 
 rm $DIR_INSTALL/etc/fstab
-cp -a /root/fstab4 $DIR_INSTALL/etc/fstab
+cp -a /root/fstab $DIR_INSTALL/etc/fstab
 
 rm $DIR_INSTALL/root/install.sh
 rm $DIR_INSTALL/root/fstab
 rm $DIR_INSTALL/usr/bin/ddbr
-rm $DIR_INSTALL/usr/bin/ddbr_backup_nand
-rm $DIR_INSTALL/usr/bin/ddbr_backup_nand_full
-rm $DIR_INSTALL/usr/bin/ddbr_restore_nand
 
-rm $DIR_INSTALL/usr/bin/kvim_full
-rm $DIR_INSTALL/usr/bin/kvim_update
-rm $DIR_INSTALL/usr/bin/kvim2_full
-rm $DIR_INSTALL/usr/bin/kvim2_update
-
-cd /
 sync
-
 umount $DIR_INSTALL
-
-echo "*******************************************"
-echo "Done copy ROOTFS"
-echo "*******************************************"
 
 echo "*******************************************"
 echo "Complete copy OS to eMMC "

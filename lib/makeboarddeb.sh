@@ -69,6 +69,23 @@ create_board_package()
 		rm /etc/network/interfaces
 		mv /etc/network/interfaces.tmp /etc/network/interfaces
 	fi
+	# swap
+	grep -q vm.swappiness /etc/sysctl.conf
+	case \$? in
+	0)
+		sed -i 's/vm\.swappiness.*/vm.swappiness=100/' /etc/sysctl.conf
+		;;
+	*)
+		echo vm.swappiness=100 >>/etc/sysctl.conf
+		;;
+	esac
+	sysctl -p >/dev/null 2>&1
+	# remove swap file if it was made by our start script
+	if [[ \$(stat -c%s /var/swap 2> /dev/null) == 134217728 ]]; then
+        swapoff /var/swap
+        sed -i '/\/var\/swap/d' /etc/fstab
+        rm /var/swap
+	fi
 	# disable deprecated services
 	systemctl disable armhwinfo.service >/dev/null 2>&1
 	#
@@ -84,7 +101,6 @@ create_board_package()
 	[ -f "/etc/update-motd.d/98-autoreboot-warn" ] && rm /etc/update-motd.d/98-autoreboot-warn
 	[ -f "/etc/update-motd.d/99-point-to-faq" ] && rm /etc/update-motd.d/99-point-to-faq
 	# Remove Ubuntu junk
-	[ -f "/etc/update-motd.d/50-motd-news" ] && rm /etc/update-motd.d/50-motd-news
 	[ -f "/etc/update-motd.d/80-esm" ] && rm /etc/update-motd.d/80-esm
 	[ -f "/etc/update-motd.d/80-livepatch" ] && rm /etc/update-motd.d/80-livepatch
 	# Remove distro unattended-upgrades config
@@ -138,7 +154,12 @@ create_board_package()
 
 	# check if it was disabled in config and disable in new service
 	if [ -n "\$(grep -w '^ENABLED=false' /etc/default/log2ram 2> /dev/null)" ]; then
-			sed -i "s/^ENABLED=.*/ENABLED=false/" /etc/default/armbian-ramlog
+		sed -i "s/^ENABLED=.*/ENABLED=false/" /etc/default/armbian-ramlog
+	fi
+
+	# fix boot delay "waiting for suspend/resume device"
+	if [ -n "\$(grep -w '^RESUME=none' /etc/initramfs-tools/initramfs.conf 2> /dev/null)" ]; then
+		echo "RESUME=none" >> /etc/initramfs-tools/initramfs.conf
 	fi
 
 	# install bootscripts if they are not present. Fix upgrades from old images
