@@ -127,6 +127,9 @@ cp -a /root/fstab $DIR_INSTALL/etc/fstab
 rm $DIR_INSTALL/root/install.sh
 rm $DIR_INSTALL/root/fstab
 rm $DIR_INSTALL/usr/bin/ddbr
+rm $DIR_INSTALL/usr/bin/ddbr_backup_nand
+rm $DIR_INSTALL/usr/bin/ddbr_backup_nand_full
+rm $DIR_INSTALL/usr/bin/ddbr_restore_nand
 
 sync
 umount $DIR_INSTALL
