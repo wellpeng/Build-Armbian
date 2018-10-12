@@ -9,12 +9,3 @@
  endif
  
  # KASAN_SHADOW_OFFSET = VA_START + (1 << (VA_BITS - 3)) - (1 << 61)
-@@ -117,7 +117,7 @@
- 	$(Q)$(MAKE) $(build)=$(boot) $@
- 
- %.dtb: scripts
--	$(Q)$(MAKE) $(build)=$(boot)/dts $(boot)/dts/$@
-+	$(Q)$(MAKE) $(build)=$(boot)/dts/amlogic $(boot)/dts/amlogic/$@
- 
- PHONY += dtbs dtbs_install
- 
