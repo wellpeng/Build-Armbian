@@ -10,7 +10,7 @@
 # common options
 # daily beta build contains date in subrevision
 if [[ $BETA == yes && -z $SUBREVISION ]]; then SUBREVISION="."$(date --date="tomorrow" +"%y%m%d"); fi
-REVISION="5.62$SUBREVISION" # all boards have same revision
+REVISION="5.64$SUBREVISION" # all boards have same revision
 ROOTPWD="1234" # Must be changed @first login
 MAINTAINER="Oleg Ivanov" # deb signature
 MAINTAINERMAIL="balbes-150@yandex.ru" # deb signature
@@ -157,12 +157,10 @@ PACKAGE_LIST_DESKTOP_RECOMMENDS="mirage galculator hexchat xfce4-screenshooter n
 
 case $DISPLAY_MANAGER in
 	nodm)
-#		PACKAGE_LIST_DISPLAY_MANAGER="nodm"
 		PACKAGE_LIST_DESKTOP+=" nodm"
 	;;
 
 	lightdm)
-#		PACKAGE_LIST_DISPLAY_MANAGER="lightdm lightdm-gtk-greeter"
 		PACKAGE_LIST_DESKTOP+=" lightdm lightdm-gtk-greeter"
 	;;
 

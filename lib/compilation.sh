@@ -216,6 +216,7 @@ if [[ $ADD_UBOOT == yes ]]; then
 	cat <<-EOF > $SRC/.tmp/$uboot_name/usr/lib/u-boot/platform_install.sh
 	DIR=/usr/lib/$uboot_name
 	$(declare -f write_uboot_platform)
+	$(declare -f write_uboot_platform_mtd)
 	$(declare -f setup_write_uboot_platform)
 	EOF
 
