@@ -66,6 +66,9 @@ CAN_BUILD_STRETCH=yes
 [[ -z $CRYPTROOT_SSH_UNLOCK ]] && CRYPTROOT_SSH_UNLOCK=yes
 [[ -z $CRYPTROOT_SSH_UNLOCK_PORT ]] && CRYPTROOT_SSH_UNLOCK_PORT=2022
 
+#s8xx
+SRC_LOADADDR=""
+
 # single ext4 partition is the default and preferred configuration
 #BOOTFS_TYPE=''
 

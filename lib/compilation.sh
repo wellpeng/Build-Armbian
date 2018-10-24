@@ -359,7 +359,7 @@ compile_kernel()
 	xz < .config > $sources_pkg_dir/usr/src/${LINUXCONFIG}_${version}_${REVISION}_config.xz
 
 	eval CCACHE_BASEDIR="$(pwd)" env PATH=$toolchain:$PATH \
-		'make $CTHREADS ARCH=$ARCHITECTURE CROSS_COMPILE="$CCACHE $KERNEL_COMPILER" LOCALVERSION="-$LINUXFAMILY" \
+		'make $CTHREADS ARCH=$ARCHITECTURE CROSS_COMPILE="$CCACHE $KERNEL_COMPILER" $SRC_LOADADDR LOCALVERSION="-$LINUXFAMILY" \
 		$KERNEL_IMAGE_TYPE modules dtbs 2>&1' \
 		${PROGRESS_LOG_TO_FILE:+' | tee -a $DEST/debug/compilation.log'} \
 		${OUTPUT_DIALOG:+' | dialog --backtitle "$backtitle" --progressbox "Compiling kernel..." $TTY_Y $TTY_X'} \
