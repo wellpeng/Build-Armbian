@@ -155,12 +155,12 @@ compress(){
 	echo " BY PRESSING ENTER YOU ARE CONTINUING AT YOUR OWN RISK!!!"
 	read -p " CTRL+C to QUIT | ENTER TO CONTINUE " null
 	while true
-	read -p " "$_b"ARE YOU SURE? YES=("$_c"Y"$_b") NO=("$_c"N"$_b")"$_x" " YN
+	read -p " "$_b"ARE YOU SURE? YES=("$_c"y"$_b") NO=("$_c"n"$_b")"$_x" " YN
 	do
 		case $YN in
-			Y)
+			y)
 			break;;
-			N)
+			n)
 			exit 1
 			break;;
 			*)
@@ -235,7 +235,8 @@ then
 	exit 1
 fi
 intsize=$(fdisk -s /dev/$emmc)
-image=$(echo $(cat /proc/cpuinfo | egrep '(Hardware|Revision)' | awk '{print $3}') | sed "s/ /-/g")-emmc.img
+#image=$(echo $(cat /proc/cpuinfo | egrep '(Hardware|Revision)' | awk '{print $3}') | sed "s/ /-/g")-emmc.img
+image=BACKUP-812--emmc.img
 
 ### BACKUP ONLY CHECKS
 
