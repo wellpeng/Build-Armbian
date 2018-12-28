@@ -238,7 +238,9 @@ start=`date +%s`
 # fetch_from_repo <url> <dir> <ref> <subdir_flag>
 if [[ $IGNORE_UPDATES != yes ]]; then
 	display_alert "Downloading sources" "" "info"
-	fetch_from_repo "$BOOTSOURCE" "$BOOTDIR" "$BOOTBRANCH" "yes"
+	if [[ $ADD_UBOOT == yes ]]; then
+		fetch_from_repo "$BOOTSOURCE" "$BOOTDIR" "$BOOTBRANCH" "yes"
+	fi
 	fetch_from_repo "$KERNELSOURCE" "$KERNELDIR" "$KERNELBRANCH" "yes"
 	if [[ -n $ATFSOURCE ]]; then
 		fetch_from_repo "$ATFSOURCE" "$ATFDIR" "$ATFBRANCH" "yes"
