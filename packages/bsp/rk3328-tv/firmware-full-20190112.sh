@@ -1,5 +1,5 @@
 
-NAME_PKG="firmware-aml-full-20181114"
+NAME_PKG="firmware-full-20190112"
 
 build_firmware-aml()
 {
