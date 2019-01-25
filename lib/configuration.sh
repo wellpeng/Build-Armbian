@@ -10,7 +10,7 @@
 # common options
 # daily beta build contains date in subrevision
 if [[ $BETA == yes && -z $SUBREVISION ]]; then SUBREVISION="."$(date --date="tomorrow" +"%y%m%d"); fi
-REVISION="5.71$SUBREVISION" # all boards have same revision
+REVISION="5.72$SUBREVISION" # all boards have same revision
 ROOTPWD="1234" # Must be changed @first login
 [[ -z $MAINTAINER ]] && MAINTAINER="Oleg Ivanov" # deb signature
 [[ -z $MAINTAINERMAIL ]] && MAINTAINERMAIL="balbes-150@yandex.ru" # deb signature
@@ -139,7 +139,7 @@ PACKAGE_LIST="bc bridge-utils build-essential cpufrequtils device-tree-compiler 
 
 
 # Non-essential packages
-PACKAGE_LIST_ADDITIONAL="alsa-utils btrfs-tools dosfstools iotop iozone3 stress sysbench screen \
+PACKAGE_LIST_ADDITIONAL="armbian-firmware alsa-utils btrfs-tools dosfstools iotop iozone3 stress sysbench screen \
 	ntfs-3g vim pciutils evtest htop pv lsof libfuse2 libdigest-sha-perl \
 	libproc-processtable-perl aptitude dnsutils f3 haveged hdparm rfkill vlan sysstat bash-completion \
 	hostapd git ethtool network-manager unzip ifenslave command-not-found libpam-systemd iperf3 \
