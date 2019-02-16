@@ -1,5 +1,5 @@
---- ./scripts/package/builddeb
-+++ ./scripts/package/builddeb
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
 @@ -29,20 +29,105 @@
  	# in case we are in a restrictive umask environment like 0077
  	chmod -R a+rX "$pdir"
