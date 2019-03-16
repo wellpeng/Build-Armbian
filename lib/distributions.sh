@@ -27,7 +27,7 @@ install_common()
 
 	fi
 	# define ARCH within global environment variables
-	[[ -f $SDCARD/etc/environment ]] && echo "ARCH=${ARCH//hf}" >> $SDCARD/etc/environment
+	[[ -f $SDCARD/etc/environment ]] && echo -e "ARCH=${ARCH//hf}\nLC_ALL=\"C\"" >> $SDCARD/etc/environment
 
 	# add dummy fstab entry to make mkinitramfs happy
 	echo "/dev/mmcblk0p1 / $ROOTFS_TYPE defaults 0 1" >> $SDCARD/etc/fstab
@@ -151,7 +151,6 @@ install_common()
 
 	# install kernel and u-boot packages
 	install_deb_chroot "$DEST/debs/${CHOSEN_KERNEL}_${REVISION}_${ARCH}.deb"
-
 	if [[ $ADD_UBOOT == yes ]]; then
 	    install_deb_chroot "$DEST/debs/${CHOSEN_UBOOT}_${REVISION}_${ARCH}.deb"
 	fi
@@ -166,8 +165,8 @@ install_common()
 		install_deb_chroot "$DEST/debs/${CHOSEN_KERNEL/image/headers}_${REVISION}_${ARCH}.deb"
 	fi
 
-	if [[ -f $DEST/debs/armbian-firmware_${REVISION}_${ARCH}.deb ]]; then
-		install_deb_chroot "$DEST/debs/armbian-firmware_${REVISION}_${ARCH}.deb"
+	if [[ -f $DEST/debs/firmware-armbian-full_${REVISION}_${ARCH}.deb ]]; then
+		install_deb_chroot "$DEST/debs/firmware-armbian-full_${REVISION}_${ARCH}.deb"
 	fi
 
 	if [[ -f $DEST/debs/${CHOSEN_KERNEL/image/dtb}_${REVISION}_${ARCH}.deb ]]; then
