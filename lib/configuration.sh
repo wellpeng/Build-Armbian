@@ -10,7 +10,7 @@
 # common options
 # daily beta build contains date in subrevision
 if [[ $BETA == yes && -z $SUBREVISION ]]; then SUBREVISION="."$(date --date="tomorrow" +"%y%m%d"); fi
-REVISION="5.86$SUBREVISION" # all boards have same revision
+REVISION="5.87$SUBREVISION" # all boards have same revision
 ROOTPWD="1234" # Must be changed @first login
 [[ -z $MAINTAINER ]] && MAINTAINER="Oleg Ivanov" # deb signature
 [[ -z $MAINTAINERMAIL ]] && MAINTAINERMAIL="balbes-150@yandex.ru" # deb signature
@@ -43,11 +43,12 @@ fi
 [[ $ROOTFS_TYPE == nfs ]] && FIXED_IMAGE_SIZE=64
 
 # used by multiple sources - reduce code duplication
-if [[ $USE_MAINLINE_GOOGLE_MIRROR == yes ]]; then
-	MAINLINE_KERNEL_SOURCE='https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux-stable'
-else
-	MAINLINE_KERNEL_SOURCE='git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git'
-fi
+[[ $USE_MAINLINE_GOOGLE_MIRROR == yes ]] && MAINLINE_MIRROR=google
+case $MAINLINE_MIRROR in
+	google) MAINLINE_KERNEL_SOURCE='https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux-stable' ;;
+	tuna) MAINLINE_KERNEL_SOURCE='https://mirrors.tuna.tsinghua.edu.cn/git/linux-stable.git' ;;
+	*) MAINLINE_KERNEL_SOURCE='git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git' ;;
+esac
 MAINLINE_KERNEL_DIR='linux-mainline'
 
 if [[ $USE_GITHUB_UBOOT_MIRROR == yes ]]; then
@@ -66,7 +67,7 @@ CAN_BUILD_STRETCH=yes
 [[ -z $CRYPTROOT_SSH_UNLOCK ]] && CRYPTROOT_SSH_UNLOCK=yes
 [[ -z $CRYPTROOT_SSH_UNLOCK_PORT ]] && CRYPTROOT_SSH_UNLOCK_PORT=2022
 [[ -z $WIREGUARD ]] && WIREGUARD="no"
-[[ -z $RTL8812AU ]] && RTL8812AU="no"
+[[ -z $RTL8812AU ]] && RTL8812AU="yes"
 
 #s8xx
 SRC_LOADADDR=""
@@ -226,6 +227,11 @@ esac
 
 DEBIAN_MIRROR='httpredir.debian.org/debian'
 UBUNTU_MIRROR='ports.ubuntu.com/'
+
+if [[ $DOWNLOAD_MIRROR == china ]] ; then
+	DEBIAN_MIRROR='mirrors.tuna.tsinghua.edu.cn/debian'
+	UBUNTU_MIRROR='mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/'
+fi
 
 # For user override
 if [[ -f $SRC/userpatches/lib.config ]]; then
