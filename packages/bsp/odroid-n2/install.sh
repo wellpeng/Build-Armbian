@@ -114,10 +114,8 @@ echo "Create SYS"
 mkdir -p $DIR_INSTALL/sys
 echo "Create TMP"
 mkdir -p $DIR_INSTALL/tmp
-sync
 echo "Copy USR"
 tar -cf - usr | (cd $DIR_INSTALL; tar -xpf -)
-sync
 echo "Copy VAR"
 tar -cf - var | (cd $DIR_INSTALL; tar -xpf -)
 sync
