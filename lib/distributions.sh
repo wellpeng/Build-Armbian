@@ -165,8 +165,8 @@ install_common()
 		install_deb_chroot "$DEST/debs/${CHOSEN_KERNEL/image/headers}_${REVISION}_${ARCH}.deb"
 	fi
 
-	if [[ -f $DEST/debs/firmware-armbian-full_${REVISION}_${ARCH}.deb ]]; then
-		install_deb_chroot "$DEST/debs/firmware-armbian-full_${REVISION}_${ARCH}.deb"
+	if [[ -f $DEST/debs/armbian-firmware_${REVISION}_${ARCH}.deb ]]; then
+		install_deb_chroot "$DEST/debs/armbian-firmware_${REVISION}_${ARCH}.deb"
 	fi
 
 	if [[ -f $DEST/debs/${CHOSEN_KERNEL/image/dtb}_${REVISION}_${ARCH}.deb ]]; then
