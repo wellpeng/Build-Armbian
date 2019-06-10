@@ -54,7 +54,7 @@ add_user()
 	chown $RealUserName:$RealUserName /home/$RealUserName/.Xauthority
 
 #	20171019
-	usermod -a -G audio,video,disk,input,tty,root,users,games $RealUserName
+	usermod -a -G disk,tty,root,users,games $RealUserName
 
 	RealName="$(awk -F":" "/^${RealUserName}:/ {print \$5}" </etc/passwd | cut -d',' -f1)"
 	[ -z "$RealName" ] && RealName=$RealUserName

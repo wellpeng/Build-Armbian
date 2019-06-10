@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright (c) 2015 Igor Pecovnik, igor.pecovnik@gma**.com
 #
 # This file is licensed under the terms of the GNU General Public

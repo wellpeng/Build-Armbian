@@ -4,20 +4,20 @@ echo "Start script create MBR and filesystem"
 
 DEV_EMMC=/dev/mmcblk0
 
-echo "Start clean eMMC "
+echo "Start backup u-boot default"
 
-dd if=/dev/zero  of="${DEV_EMMC}" bs=1M count=4
+dd if="${DEV_EMMC}" of=/boot/u-boot-default.img bs=1M count=4
 
 echo "Start create MBR and partittion"
 
 parted -s "${DEV_EMMC}" mklabel msdos
-parted -s "${DEV_EMMC}" mkpart primary fat32 4M 140M
-parted -s "${DEV_EMMC}" mkpart primary ext4 141M 100%
+parted -s "${DEV_EMMC}" mkpart primary fat32 700M 828M
+parted -s "${DEV_EMMC}" mkpart primary ext4 829M 100%
 
-#echo "Start restore u-boot"
+echo "Start restore u-boot"
 
-#dd if=/boot/u-boot-default.img of="${DEV_EMMC}" conv=fsync bs=1 count=442
-#dd if=/boot/u-boot-default.img of="${DEV_EMMC}" conv=fsync bs=512 skip=1 seek=1
+dd if=/boot/u-boot-default.img of="${DEV_EMMC}" conv=fsync bs=1 count=442
+dd if=/boot/u-boot-default.img of="${DEV_EMMC}" conv=fsync bs=512 skip=1 seek=1
 
 sync
 
@@ -28,8 +28,8 @@ echo "Start copy system for eMMC."
 mkdir -p /ddbr
 chmod 777 /ddbr
 
-PART_BOOT="/dev/mmcblk0p1"
-PART_ROOT="/dev/mmcblk0p2"
+PART_BOOT="${DEV_EMMC}p1"
+PART_ROOT="${DEV_EMMC}p2"
 DIR_INSTALL="/ddbr/install"
 
 if [ -d $DIR_INSTALL ] ; then
@@ -53,11 +53,11 @@ echo "done."
 
 echo -n "Edit init config..."
 sed -e "s/ROOTFS/ROOT_EMMC/g" \
- -i "$DIR_INSTALL/boot.ini"
+ -i "$DIR_INSTALL/uEnv.ini"
 echo "done."
 
-rm $DIR_INSTALL/*.scr
-rm $DIR_INSTALL/*autoscript*
+rm $DIR_INSTALL/s9*
+rm $DIR_INSTALL/aml*
 
 umount $DIR_INSTALL
 
@@ -127,6 +127,7 @@ cp -a /root/fstab $DIR_INSTALL/etc/fstab
 
 rm $DIR_INSTALL/root/install.sh
 rm $DIR_INSTALL/root/fstab
+rm $DIR_INSTALL/usr/bin/ddbr
 
 
 cd /

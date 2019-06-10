@@ -28,8 +28,8 @@ echo "Start copy system for eMMC."
 mkdir -p /ddbr
 chmod 777 /ddbr
 
-PART_BOOT="/dev/mmcblk1p1"
-PART_ROOT="/dev/mmcblk1p2"
+PART_BOOT="${DEV_EMMC}p1"
+PART_ROOT="${DEV_EMMC}p2"
 DIR_INSTALL="/ddbr/install"
 
 if [ -d $DIR_INSTALL ] ; then
@@ -118,6 +118,7 @@ echo "Copy USR"
 tar -cf - usr | (cd $DIR_INSTALL; tar -xpf -)
 echo "Copy VAR"
 tar -cf - var | (cd $DIR_INSTALL; tar -xpf -)
+sync
 
 echo "Copy fstab"
 
