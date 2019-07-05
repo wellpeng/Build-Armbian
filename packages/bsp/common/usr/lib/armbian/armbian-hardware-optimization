@@ -139,7 +139,7 @@ prepare_board() {
 				echo 8 >/proc/irq/$i/smp_affinity
 			done
 			;;
-		rockchip64|rk3328-tv|rk3399-tv) # Rock64 and Renegade: GPU on cpu1, USB3 on cpu2, Ethernet on cpu3
+		rockchip64|rk3328-tv) # Rock64 and Renegade: GPU on cpu1, USB3 on cpu2, Ethernet on cpu3
 			for i in $(awk -F':' '/Mali/{print $1}' </proc/interrupts | sed 's/\ //g'); do
 				echo 2 >/proc/irq/$i/smp_affinity
 			done
@@ -152,7 +152,7 @@ prepare_board() {
 			echo 32768 >/sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 			/sbin/ethtool -K eth0 rx off tx off
 			;;
-		rk3399)
+		rk3399|rk3399-tv)
 			for i in $(awk -F':' '/gpu/{print $1}' </proc/interrupts | sed 's/\ //g'); do
 				echo 2 >/proc/irq/$i/smp_affinity
 			done
