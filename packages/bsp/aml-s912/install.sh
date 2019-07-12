@@ -2,7 +2,49 @@
 
 echo "Start script create MBR and filesystem"
 
-DEV_EMMC=/dev/mmcblk1
+hasdrives=$(lsblk | grep -oE '(mmcblk[0-9])' | sort | uniq)
+if [ "$hasdrives" = "" ]
+then
+	echo "UNABLE TO FIND ANY EMMC OR SD DRIVES ON THIS SYSTEM!!! "
+	exit 1
+fi
+avail=$(lsblk | grep -oE '(mmcblk[0-9]|sda[0-9])' | sort | uniq)
+if [ "$avail" = "" ]
+then
+	echo "UNABLE TO FIND ANY DRIVES ON THIS SYSTEM!!!"
+	exit 1
+fi
+runfrom=$(lsblk | grep /$ | grep -oE '(mmcblk[0-9]|sda[0-9])')
+if [ "$runfrom" = "" ]
+then
+	echo " UNABLE TO FIND ROOT OF THE RUNNING SYSTEM!!! "
+	exit 1
+fi
+emmc=$(echo $avail | sed "s/$runfrom//" | sed "s/sd[a-z][0-9]//g" | sed "s/ //g")
+if [ "$emmc" = "" ]
+then
+	echo " UNABLE TO FIND YOUR EMMC DRIVE OR YOU ALREADY RUN FROM EMMC!!!"
+	exit 1
+fi
+if [ "$runfrom" = "$avail" ]
+then
+	echo " YOU ARE RUNNING ALREADY FROM EMMC!!! "
+	exit 1
+fi
+if [ $runfrom = $emmc ]
+then
+	echo " YOU ARE RUNNING ALREADY FROM EMMC!!! "
+	exit 1
+fi
+if [ "$(echo $emmc | grep mmcblk)" = "" ]
+then
+	echo " YOU DO NOT APPEAR TO HAVE AN EMMC DRIVE!!! "
+	exit 1
+fi
+
+DEV_EMMC="/dev/$emmc"
+
+echo $DEV_EMMC
 
 echo "Start backup u-boot default"
 
@@ -28,8 +70,8 @@ echo "Start copy system for eMMC."
 mkdir -p /ddbr
 chmod 777 /ddbr
 
-PART_BOOT="/dev/mmcblk1p1"
-PART_ROOT="/dev/mmcblk1p2"
+PART_BOOT="${DEV_EMMC}p1"
+PART_ROOT="${DEV_EMMC}p2"
 DIR_INSTALL="/ddbr/install"
 
 if [ -d $DIR_INSTALL ] ; then
@@ -118,6 +160,7 @@ echo "Copy USR"
 tar -cf - usr | (cd $DIR_INSTALL; tar -xpf -)
 echo "Copy VAR"
 tar -cf - var | (cd $DIR_INSTALL; tar -xpf -)
+sync
 
 echo "Copy fstab"
 

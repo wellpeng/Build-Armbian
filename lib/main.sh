@@ -247,10 +247,10 @@ fi
 if [[ $KERNEL_ONLY != yes && -z $RELEASE ]]; then
 
 	options=()
-	[[ $EXPERT = yes ]] && options+=("jessie" "Debian 8 Jessie / unsupported")
-	options+=("stretch" "Debian 9 Stretch")
-	[[ $EXPERT = yes ]] && options+=("buster" "Debian 10 Buster / unsupported")
-	options+=("xenial" "Ubuntu Xenial 16.04 LTS")
+#	[[ $EXPERT = yes ]] && options+=("jessie" "Debian 8 Jessie / unsupported")
+#	options+=("stretch" "Debian 9 Stretch")
+	options+=("buster" "Debian 10 Buster")
+#	options+=("xenial" "Ubuntu Xenial 16.04 LTS")
 	options+=("bionic" "Ubuntu Bionic 18.04 LTS")
 	[[ $EXPERT = yes ]] && options+=("disco" "Ubuntu Disco 19.04 / unsupported")
 
@@ -351,6 +351,7 @@ fi
 
 # Compile kernel if packed .deb does not exist
 if [[ ! -f ${DEST}/debs/${CHOSEN_KERNEL}_${REVISION}_${ARCH}.deb ]]; then
+	KDEB_CHANGELOG_DIST=$RELEASE
 	compile_kernel
 fi
 
@@ -393,4 +394,5 @@ $([[ -n $RELEASE ]] && echo "RELEASE=${RELEASE} ")\
 $([[ -n $BUILD_DESKTOP ]] && echo "BUILD_DESKTOP=${BUILD_DESKTOP} ")\
 $([[ -n $KERNEL_ONLY ]] && echo "KERNEL_ONLY=${KERNEL_ONLY} ")\
 $([[ -n $KERNEL_CONFIGURE ]] && echo "KERNEL_CONFIGURE=${KERNEL_CONFIGURE} ")\
+$([[ -n $COMPRESS_OUTPUTIMAGE ]] && echo "COMPRESS_OUTPUTIMAGE=${COMPRESS_OUTPUTIMAGE} ")\
 " "info"

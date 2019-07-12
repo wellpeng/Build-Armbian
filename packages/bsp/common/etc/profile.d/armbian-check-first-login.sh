@@ -66,6 +66,12 @@ add_user()
 		touch /home/${RealUserName}/.activate_psd
 		chown $RealUserName:$RealUserName /home/${RealUserName}/.activate_psd
 	fi
+
+	if [[ -f /root/g12_sound.sh ]]; then
+		echo -e "\nEnable G12 sound. \c"
+		/root/g12_sound.sh
+	fi
+
 }
 
 if [ -f /root/.not_logged_in_yet ] && [ -n "$BASH_VERSION" ] && [ "$-" != "${-#*i}" ]; then
