@@ -67,10 +67,10 @@ add_user()
 		chown $RealUserName:$RealUserName /home/${RealUserName}/.activate_psd
 	fi
 
-	if [[ -f /root/g12_sound.sh ]]; then
-		echo -e "\nEnable G12 sound. \c"
-		/root/g12_sound.sh
-	fi
+#	if [[ -f /root/g12_sound.sh ]]; then
+#		echo -e "\nEnable G12 sound. \c"
+#		/root/g12_sound.sh
+#	fi
 
 }
 

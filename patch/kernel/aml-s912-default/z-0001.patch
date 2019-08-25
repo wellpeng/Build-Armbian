@@ -1,0 +1,15 @@
+--- a/drivers/net/wireless/bcmdhd/wl_iw.c
++++ b/drivers/net/wireless/bcmdhd/wl_iw.c
+@@ -47,6 +47,11 @@
+ #include <wl_android.h>
+ #ifdef WL_ESCAN
+ #include <wl_escan.h>
++
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0))
++  #define get_ds() (KERNEL_DS)
++#endif
++
+ #endif
+ #include <dhd_config.h>
+ 
+

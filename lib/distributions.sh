@@ -44,8 +44,8 @@ install_common()
 		[[ -f $SDCARD/etc/dropbear-initramfs/config ]] && sed -i 's/^#DROPBEAR_OPTIONS=/DROPBEAR_OPTIONS="-p '"${CRYPTROOT_SSH_UNLOCK_PORT}"'"/' "${SDCARD}"/etc/dropbear-initramfs/config
 
 		# setup dropbear authorized_keys, either provided by userpatches or generated
-		if [[ -f $SRC/userpatches/dropbear_authorized_keys ]]; then
-			cp "${SRC}"/userpatches/dropbear_authorized_keys "${SDCARD}"/etc/dropbear-initramfs/authorized_keys
+		if [[ -f $USERPATCHES_PATH/dropbear_authorized_keys ]]; then
+			cp "$USERPATCHES_PATH"/dropbear_authorized_keys "${SDCARD}"/etc/dropbear-initramfs/authorized_keys
 		else
 			# generate a default ssh key for login on dropbear in initramfs
 			# this key should be changed by the user on first login
@@ -99,6 +99,10 @@ install_common()
 	# console fix due to Debian bug
 	sed -e 's/CHARMAP=".*"/CHARMAP="'$CONSOLE_CHAR'"/g' -i "${SDCARD}"/etc/default/console-setup
 
+	# ping needs privileged action to be able to create raw network socket
+	# this is working properly but not with (at least) Debian Buster
+	chroot "${SDCARD}" /bin/bash -c "chmod u+s /bin/ping"
+
 	# change time zone data
 	echo "${TZDATA}" > "${SDCARD}"/etc/timezone
 	chroot "${SDCARD}" /bin/bash -c "dpkg-reconfigure -f noninteractive tzdata >/dev/null 2>&1"
@@ -132,15 +136,20 @@ install_common()
 	local bootscript_dst=${BOOTSCRIPT##*:}
 	cp "${SRC}/config/bootscripts/${bootscript_src}" "${SDCARD}/boot/${bootscript_dst}"
 
-	[[ -n $BOOTENV_FILE && -f $SRC/config/bootenv/$BOOTENV_FILE ]] && \
-		cp "${SRC}/config/bootenv/${BOOTENV_FILE}" "${SDCARD}"/boot/armbianEnv.txt
+	if [[ -n $BOOTENV_FILE ]]; then
+		if [[ -f $USERPATCHES_PATH/bootenv/$BOOTENV_FILE ]]; then
+			cp "$USERPATCHES_PATH/bootenv/${BOOTENV_FILE}" "${SDCARD}"/boot/armbianEnv.txt
+		elif [[ -f $SRC/config/bootenv/$BOOTENV_FILE ]]; then
+			cp "${SRC}/config/bootenv/${BOOTENV_FILE}" "${SDCARD}"/boot/armbianEnv.txt
+		fi
+	fi
 
 	# TODO: modify $bootscript_dst or armbianEnv.txt to make NFS boot universal
 	# instead of copying sunxi-specific template
 	if [[ $ROOTFS_TYPE == nfs ]]; then
 		display_alert "Copying NFS boot script template"
-		if [[ -f $SRC/userpatches/nfs-boot.cmd ]]; then
-			cp "${SRC}"/userpatches/nfs-boot.cmd "${SDCARD}"/boot/boot.cmd
+		if [[ -f $USERPATCHES_PATH/nfs-boot.cmd ]]; then
+			cp "$USERPATCHES_PATH"/nfs-boot.cmd "${SDCARD}"/boot/boot.cmd
 		else
 			cp "${SRC}"/config/templates/nfs-boot.cmd.template "${SDCARD}"/boot/boot.cmd
 		fi
@@ -289,6 +298,9 @@ install_common()
 	# configure network manager
 	sed "s/managed=\(.*\)/managed=true/g" -i "${SDCARD}"/etc/NetworkManager/NetworkManager.conf
 
+	# remove network manager defaults to handle eth by default
+	rm -f "${SDCARD}"/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf
+
 	# Just regular DNS and maintain /etc/resolv.conf as a file
 	sed "/dns/d" -i "${SDCARD}"/etc/NetworkManager/NetworkManager.conf
 	sed "s/\[main\]/\[main\]\ndns=default\nrc-manager=file/g" -i "${SDCARD}"/etc/NetworkManager/NetworkManager.conf
@@ -300,7 +312,7 @@ install_common()
 		EOF
 	fi
 
-        # nsswitch settings for sane DNS behavior: remove resolve, assure libnss-myhostname support
+	# nsswitch settings for sane DNS behavior: remove resolve, assure libnss-myhostname support
 	sed "s/hosts\:.*/hosts:          files mymachines dns myhostname/g" -i "${SDCARD}"/etc/nsswitch.conf
 }
 
@@ -373,7 +385,7 @@ install_distribution_specific()
 		EOF
 		chmod +x "${SDCARD}"/etc/rc.local
 		# Basic Netplan config. Let NetworkManager manage all devices on this system
-		cat <<-EOF > "${SDCARD}"/etc/netplan/armbian-default.yaml
+		[[ -d "${SDCARD}"/etc/netplan ]] && cat <<-EOF > "${SDCARD}"/etc/netplan/armbian-default.yaml
 		network:
 		  version: 2
 		  renderer: NetworkManager
@@ -432,7 +444,7 @@ install_distribution_specific()
 		EOF
 		chmod +x "${SDCARD}"/etc/rc.local
 		# Basic Netplan config. Let NetworkManager manage all devices on this system
-		cat <<-EOF > "${SDCARD}"/etc/netplan/armbian-default.yaml
+		[[ -d "${SDCARD}"/etc/netplan ]] && cat <<-EOF > "${SDCARD}"/etc/netplan/armbian-default.yaml
 		network:
 		  version: 2
 		  renderer: NetworkManager

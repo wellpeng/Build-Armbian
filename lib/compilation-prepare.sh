@@ -12,27 +12,39 @@
 
 compilation_prepare()
 {
- 
-	# AUFS - advanced multi layered unification filesystem for Kernel 5.1.y
+
+	# AUFS - advanced multi layered unification filesystem for Kernel > 5.1
 	#
 	# Older versions have AUFS support with a patch
 
-	if linux-version compare $version ge 5.1 && linux-version compare $version le 5.2 && [ "$AUFS" == yes ]; then
+	if linux-version compare $version ge 5.1 && [ "$AUFS" == yes ]; then
 
 		# attach to specifics tag or branch
-		local aufsver="branch:aufs5.1"
+		local aufstag=$(echo ${version} | cut -f 1-2 -d ".")
 
-		display_alert "Adding" "AUFS 5.1" "info"
+		# check if Mr. Okajima already made a branch for this version
+		git ls-remote --exit-code --heads https://github.com/sfjro/aufs5-standalone aufs${aufstag} >/dev/null
 
-		fetch_from_repo "https://github.com/sfjro/aufs5-standalone" "aufs5" "branch:${aufsver}" "yes"
-		cd ${SRC}/cache/sources/${LINUXSOURCEDIR}
-		process_patch_file "${SRC}/cache/sources/aufs5/${aufsver#*:}/aufs5-kbuild.patch"		"applying"
-		process_patch_file "${SRC}/cache/sources/aufs5/${aufsver#*:}/aufs5-base.patch"			"applying"
-		process_patch_file "${SRC}/cache/sources/aufs5/${aufsver#*:}/aufs5-mmap.patch"			"applying"
-		process_patch_file "${SRC}/cache/sources/aufs5/${aufsver#*:}/aufs5-standalone.patch"	"applying"		
-		cp -R ${SRC}/cache/sources/aufs5/${aufsver#*:}/{Documentation,fs} .
-		cp ${SRC}/cache/sources/aufs5/${aufsver#*:}/include/uapi/linux/aufs_type.h include/uapi/linux/
+		if [ "$?" -ne "0" ]; then
+			# then use rc branch
+			aufstag="5.x-rcN"
+			git ls-remote --exit-code --heads https://github.com/sfjro/aufs5-standalone aufs${aufstag} >/dev/null
+		fi
 
+		if [ "$?" -eq "0" ]; then
+
+			display_alert "Adding" "AUFS ${aufstag}" "info"
+			local aufsver="branch:aufs${aufstag}"
+			fetch_from_repo "https://github.com/sfjro/aufs5-standalone" "aufs5" "branch:${aufsver}" "yes"
+			cd ${SRC}/cache/sources/${LINUXSOURCEDIR}
+			process_patch_file "${SRC}/cache/sources/aufs5/${aufsver#*:}/aufs5-kbuild.patch"		"applying"
+			process_patch_file "${SRC}/cache/sources/aufs5/${aufsver#*:}/aufs5-base.patch"			"applying"
+			process_patch_file "${SRC}/cache/sources/aufs5/${aufsver#*:}/aufs5-mmap.patch"			"applying"
+			process_patch_file "${SRC}/cache/sources/aufs5/${aufsver#*:}/aufs5-standalone.patch"	"applying"
+			cp -R ${SRC}/cache/sources/aufs5/${aufsver#*:}/{Documentation,fs} .
+			cp ${SRC}/cache/sources/aufs5/${aufsver#*:}/include/uapi/linux/aufs_type.h include/uapi/linux/
+
+		fi
 	fi
 
 
