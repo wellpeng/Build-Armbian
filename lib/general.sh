@@ -172,7 +172,7 @@ create_sources_list()
 		echo "deb http://apt.armbian.com $RELEASE main ${RELEASE}-utils ${RELEASE}-desktop" > $SDCARD/etc/apt/sources.list.d/armbian.list
 	fi
 
-	display_alert "Add armbian repository and install key" "/etc/apt/sources.list.d/armbian.list" "info"
+	display_alert "Adding Armbian repository and authentication key" "/etc/apt/sources.list.d/armbian.list" "info"
 	cp $SRC/config/armbian.key $SDCARD
 	chroot $SDCARD /bin/bash -c "cat armbian.key | apt-key add - > /dev/null 2>&1"
 	rm $SDCARD/armbian.key
@@ -499,7 +499,7 @@ addtorepo()
 
 		if [ $mainnum -gt 0 ] && [ $utilnum -gt 0 ] && [ $desknum -gt 0 ]; then
 			# publish
-			aptly publish $forceoverwrite -passphrase=$GPG_PASS -origin=Armbian -label=Armbian -config=${SCRIPTPATH}config/${REPO_CONFIG} -component=${COMPONENTS// /,} \
+			aptly publish -force-overwrite -passphrase=$GPG_PASS -origin=Armbian -label=Armbian -config=${SCRIPTPATH}config/${REPO_CONFIG} -component=${COMPONENTS// /,} \
 				--distribution=$release repo $release ${COMPONENTS//main/} >/dev/null
 			if [[ $? -ne 0 ]]; then
 				display_alert "Publishing failed" "$release" "err"

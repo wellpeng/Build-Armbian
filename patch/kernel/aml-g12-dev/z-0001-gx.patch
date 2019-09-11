@@ -1,0 +1,11 @@
+--- a/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
+@@ -175,6 +175,7 @@
+ 	status = "okay";
+ 	pinctrl-0 = <&remote_input_ao_pins>;
+ 	pinctrl-names = "default";
++	linux,rc-map-name = "rc-geekbox";
+ };
+ 
+ &pwm_ef {
+
