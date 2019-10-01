@@ -401,17 +401,22 @@ prepare_partitions()
 
 	# stage: create partition table
 	display_alert "Creating partitions" "${bootfs:+/boot: $bootfs }root: $ROOTFS_TYPE" "info"
-	parted -s ${SDCARD}.raw -- mklabel msdos
-	if [[ $ROOTFS_TYPE == nfs ]]; then
-		# single /boot partition
-		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${bootstart}s -1s
-	elif [[ $BOOTSIZE == 0 ]]; then
-		# single root partition
-		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$ROOTFS_TYPE]} ${rootstart}s -1s
+	if [[ ${BOARDFAMILY} == jetson-nano ]]; then
+		parted -s ${SDCARD}.raw -- mklabel msdos
+		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$ROOTFS_TYPE]} 24576s -1s
 	else
-		# /boot partition + root partition
-		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${bootstart}s ${bootend}s
-		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$ROOTFS_TYPE]} ${rootstart}s -1s
+		parted -s ${SDCARD}.raw -- mklabel msdos
+		if [[ $ROOTFS_TYPE == nfs ]]; then
+			# single /boot partition
+			parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${bootstart}s -1s
+		elif [[ $BOOTSIZE == 0 ]]; then
+			# single root partition
+			parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$ROOTFS_TYPE]} ${rootstart}s -1s
+		else
+			# /boot partition + root partition
+			parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${bootstart}s ${bootend}s
+			parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$ROOTFS_TYPE]} ${rootstart}s -1s
+		fi
 	fi
 
 	# stage: mount image
