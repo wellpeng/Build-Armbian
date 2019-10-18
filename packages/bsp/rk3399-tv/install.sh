@@ -28,9 +28,9 @@ if [ -f /boot/u-boot/uboot.img ] ; then
     dd if=/boot/u-boot/uboot.img of="${DEV_EMMC}" conv=fsync seek=16384
 fi
 
-if [ -f /boot/u-boot/trust.img ] ; then
-    dd if=/boot/u-boot/trust.img of="${DEV_EMMC}" conv=fsync seek=24576
-fi
+#if [ -f /boot/u-boot/trust.img ] ; then
+#    dd if=/boot/u-boot/trust.img of="${DEV_EMMC}" conv=fsync seek=24576
+#fi
 
 sync
 
