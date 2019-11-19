@@ -1,0 +1,12 @@
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-p230.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-p230.dts
+@@ -84,9 +84,6 @@
+ 		reset-assert-us = <10000>;
+ 		reset-deassert-us = <30000>;
+ 		reset-gpios = <&gpio GPIOZ_14 GPIO_ACTIVE_LOW>;
+-
+-		interrupt-parent = <&gpio_intc>;
+-		interrupts = <29 IRQ_TYPE_LEVEL_LOW>;
+ 	};
+ };
+ 

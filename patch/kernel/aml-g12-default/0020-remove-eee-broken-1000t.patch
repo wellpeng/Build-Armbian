@@ -1,0 +1,10 @@
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-p230.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-p230.dts
+@@ -87,7 +87,6 @@
+ 
+ 		interrupt-parent = <&gpio_intc>;
+ 		interrupts = <29 IRQ_TYPE_LEVEL_LOW>;
+-		eee-broken-1000t;
+ 	};
+ };
+ 
