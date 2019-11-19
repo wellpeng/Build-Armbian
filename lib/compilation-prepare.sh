@@ -55,12 +55,12 @@ compilation_prepare()
 
 		# attach to specifics tag or branch
 		#local wirever="branch:master"
-		local wirever="tag:0.0.20190702"
+		local wirever="tag:0.0.20191012"
 
 		display_alert "Adding" "WireGuard ${wirever} " "info"
 
 		# fetch_from_repo "https://git.zx2c4.com/WireGuard" "wireguard" "${wirever}" "yes"
-		fetch_from_repo "https://git.zx2c4.com/WireGuard" "wireguard" "${wirever}" "yes"
+		fetch_from_repo "https://github.com/WireGuard/WireGuard" "wireguard" "${wirever}" "yes"
 		cd ${SRC}/cache/sources/${LINUXSOURCEDIR}
 		rm -rf ${SRC}/cache/sources/${LINUXSOURCEDIR}/net/wireguard
 		cp -R ${SRC}/cache/sources/wireguard/${wirever#*:}/src/ ${SRC}/cache/sources/${LINUXSOURCEDIR}/net/wireguard
