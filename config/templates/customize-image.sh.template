@@ -36,6 +36,10 @@ Main() {
 			# your code here
 			;;
 	esac
+	
+	FixPhicommN1Firmware
+
+	RandomWlanMACAddress
 } # Main
 
 InstallOpenMediaVault() {
@@ -240,5 +244,65 @@ InstallAdvancedDesktop()
 	[[ -f /usr/share/doc/avahi-daemon/examples/ssh.service ]] && cp /usr/share/doc/avahi-daemon/examples/ssh.service /etc/avahi/services/
 	apt clean
 } # InstallAdvancedDesktop
+
+FixPhicommN1Firmware()
+{
+	if [[ ! -s "/lib/firmware/brcm/BCM4345C0.hcd" ]] ; then
+		if [[ -f "/lib/firmware/BCM4345C0.hcd" ]] ; then
+			ln -sf "../BCM4345C0.hcd" "/lib/firmware/brcm/BCM4345C0.hcd"
+		else
+			wget -O "/lib/firmware/brcm/BCM4345C0.hcd" \
+				https://github.com/RPi-Distro/bluez-firmware/raw/master/broadcom/BCM4345C0.hcd
+		fi
+	fi
+
+	if [[ ! -s "/lib/firmware/brcm/brcmfmac43455-sdio.bin" ]] ; then
+		wget -O "/lib/firmware/brcm/brcmfmac43455-sdio.bin" \
+			https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43455-sdio.bin
+	fi
+
+	if [[ ! -s "/lib/firmware/brcm/brcmfmac43455-sdio.clm_blob" ]] ; then
+		wget -O "/lib/firmware/brcm/brcmfmac43455-sdio.clm_blob" \
+			https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43455-sdio.clm_blob
+	fi
+
+	if [[ ! -s "/lib/firmware/brcm/brcmfmac43455-sdio.txt" ]] ; then
+		wget -O "/lib/firmware/brcm/brcmfmac43455-sdio.txt" \
+			https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43455-sdio.txt
+	fi
+
+	if [[ ! -s "/lib/firmware/brcm/brcmfmac43455-sdio.phicomm,n1.txt" ]] ; then
+		if [[ -L "/lib/firmware/brcm/brcmfmac43455-sdio.txt" ]] ; then
+			wget -O "/lib/firmware/brcm/brcmfmac43455-sdio.phicomm,n1.txt" \
+				https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43455-sdio.txt
+		else
+			cp "/lib/firmware/brcm/brcmfmac43455-sdio.txt" "/lib/firmware/brcm/brcmfmac43455-sdio.phicomm,n1.txt"
+		fi
+	fi
+} # FixPhicommN1Firmware
+
+RandomWlanMACAddress()
+{
+	# 2c:15:e1	Phicomm (shanghai) Co., Ltd.
+	# 2c:b2:1a	Phicomm (shanghai) Co., Ltd.
+	# 68:db:54	Phicomm (shanghai) Co., Ltd.
+	# 74:7d:24	Phicomm (shanghai) Co., Ltd.
+	# 98:bb:99	Phicomm (sichuan) Co.,ltd.
+	# cc:81:da	Phicomm (shanghai) Co., Ltd.
+	# d8:c8:e9	Phicomm (shanghai) Co., Ltd.
+	# fc:7c:02	Phicomm (shanghai) Co., Ltd.
+
+	RANDOM_MAC="$(printf 'cc:81:da:%02x:%02x:%02x\n' $[RANDOM%256] $[RANDOM%256] $[RANDOM%256])"
+
+	if [[ -f "/lib/firmware/brcm/brcmfmac43455-sdio.phicomm,n1.txt" ]] ; then
+		sed -i -e "s/^macaddr=b8:27:eb:74:f2:6c$/macaddr=$RANDOM_MAC/" \
+			"/lib/firmware/brcm/brcmfmac43455-sdio.phicomm,n1.txt"
+	fi
+
+	if [[ -f "/lib/firmware/brcm/brcmfmac43455-sdio.txt" ]] ; then
+		sed -i -e "s/^macaddr=b8:27:eb:74:f2:6c$/macaddr=$RANDOM_MAC/" \
+			"/lib/firmware/brcm/brcmfmac43455-sdio.txt"
+	fi
+} # RandomWlanMACAddress
 
 Main "$@"
