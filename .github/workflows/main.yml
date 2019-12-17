@@ -12,20 +12,24 @@ jobs:
         fetch-depth: 1
     - name: Run a one-line script
       run: echo Hello, world!
+    - name: Run a one-line script
+      run: ls
+    - name: Run a one-line script
+      run: pwd
+    - name: Run a one-line script
+      run: free -g
     - name: Run a multi-line script
 #      env:
 #        DEBIAN_FRONTEND: noninteractive
       run: |
         echo Add other actions to build,
         echo test, and deploy your project.
-        ls
-        pwd
-        free -g
-        sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d/*
         sudo swapoff /swapfile
         sudo rm -f /swapfile
         sudo -E apt-get -qq update
         sudo -E apt-get -qq -y install gcc make autoconf pkg-config git bc bison flex libelf-dev libssl-dev libncurses5-dev dialog aria2 pv
         sudo -E apt-get -qq clean
-        cd Build-Armbian && touch .ignore_changes
+    - name: Run a multi-line script for compile
+      run: |
+        sudo -E touch .ignore_changes
         sudo -E sh compile.sh BOARD=aml-g12 BRANCH=default RELEASE=bionic BUILD_MINIMAL=no BUILD_DESKTOP=no KERNEL_ONLY=no KERNEL_CONFIGURE=no EXTERNAL=no
