@@ -18,7 +18,6 @@ jobs:
       run: |
         sudo -E apt-get -qq -y update
         sudo -E apt-get -qq -y apt-cacher-ng
-        sudo service apt-cacher-ng force-reload
     - name: Run a multi-line script
       run: |
         echo test, and deploy project.
