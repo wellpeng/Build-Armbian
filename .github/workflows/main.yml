@@ -14,13 +14,16 @@ jobs:
       run: ls
     - name: Run a one-line script
       run: pwd
+    - name: apt-cacher-ng
+      run: |
+        sudo -E apt-get -qq -y update
+        sudo -E apt-get -qq -y apt-cacher-ng
+        sudo service apt-cacher-ng force-reload
     - name: Run a multi-line script
-#      env:
-#        DEBIAN_FRONTEND: noninteractive
       run: |
         echo test, and deploy project.
         sudo -E apt-get -qq -y update
-        sudo -E apt-get -qq -y install gcc gcc-multilib make autoconf pkg-config git git-core bc bison flex libelf-dev libssl-dev libncurses5-dev dialog aria2 pv wget curl bzip2 libglib2.0-dev build-essential asciidoc binutils bzip2 gawk gettext libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 automake libtool autopoint texinfo libglib2.0-dev apt-cacher-ng
+        sudo -E apt-get -qq -y install gcc gcc-multilib make autoconf pkg-config git git-core bc bison flex libelf-dev libssl-dev libncurses5-dev dialog aria2 pv wget curl bzip2 libglib2.0-dev build-essential asciidoc binutils bzip2 gawk gettext libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 automake libtool autopoint texinfo libglib2.0-dev
     - name: Run a multi-line script for compile
       run: |
         sudo -E touch .ignore_changes
