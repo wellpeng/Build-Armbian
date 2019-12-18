@@ -19,10 +19,8 @@ jobs:
 #        DEBIAN_FRONTEND: noninteractive
       run: |
         echo test, and deploy project.
-        sudo swapoff /swapfile
-        sudo rm -f /swapfile
         sudo -E apt-get -qq -y update
-        sudo -E apt-get -qq -y install gcc make autoconf pkg-config git bc bison flex libelf-dev libssl-dev libncurses5-dev dialog aria2 pv wget curl
+        sudo -E apt-get -qq -y install gcc gcc-multilib make autoconf pkg-config git git-core bc bison flex libelf-dev libssl-dev libncurses5-dev dialog aria2 pv wget curl bzip2 libglib2.0-dev build-essential asciidoc binutils bzip2 gawk gettext libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 automake libtool autopoint texinfo libglib2.0-dev
     - name: Run a multi-line script for compile
       run: |
         sudo -E touch .ignore_changes
