@@ -22,5 +22,5 @@ jobs:
         sudo -E apt-get -qq -y install gcc gcc-multilib make autoconf pkg-config git git-core bc bison flex libelf-dev libssl-dev libncurses5-dev dialog aria2 pv wget curl bzip2 libglib2.0-dev build-essential asciidoc binutils bzip2 gawk gettext libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 automake libtool autopoint texinfo libglib2.0-dev
     - name: Run a multi-line script for compile
       run: |
-        sudo -E touch .ignore_changes
-        sudo -E ./compile.sh BOARD=aml-g12 BRANCH=default RELEASE=bionic BUILD_MINIMAL=no BUILD_DESKTOP=no KERNEL_ONLY=no KERNEL_CONFIGURE=no EXTERNAL=no
+        sudo touch .ignore_changes
+        sudo ./compile.sh BOARD=aml-g12 BRANCH=default RELEASE=bionic BUILD_MINIMAL=no BUILD_DESKTOP=no KERNEL_ONLY=no KERNEL_CONFIGURE=no EXTERNAL=no
