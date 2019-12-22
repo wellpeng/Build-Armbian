@@ -7,16 +7,14 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
       with:
         fetch-depth: 1
+        ref: phicomm-n1
     - name: Run a one-line script
       run: ls
     - name: Run a one-line script
       run: pwd
-    - name: apt-cacher-ng
-      run: |
-        sudo -E apt-get -qq -y update
     - name: Run a multi-line script
       run: |
         echo test, and deploy project.
